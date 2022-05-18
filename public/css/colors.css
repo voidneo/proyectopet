@@ -1,0 +1,31 @@
+.light-gray-bg, body {
+    background-color: #F0F0F0;
+}
+
+.white-bg {
+    background-color: #FFF;
+}
+
+.card-shadow {
+    box-shadow: 0px 2px 1px #0000001c;
+}
+
+.gray-border-color, input[type=text], input[type=password], input[type=number], input[type=email], input[type=phone] {
+    border-color: lightgray;
+}
+
+.primary-bg, input[type=submit], .textfield-bottom-border {
+    background-color: #ab3edd;
+}
+
+.primary, body {
+    color: #ab3edd;
+}
+
+.dark-grey, body, input {
+    color: #222;
+}
+
+.white, input[type=submit] {
+    color: white;
+}
