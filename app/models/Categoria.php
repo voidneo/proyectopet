@@ -1,27 +1,24 @@
 <?php
 
 class Categoria extends Model {
-    private const CREATE_QUERY = "INSERT INTO categorias(nombre) VALUES(?)";
-    private const FIND_BY_ID_QUERY = "SELECT * FROM categorias WHERE id=:id";
+    private const CREATE_QUERY       = "INSERT INTO categorias(nombre) VALUES(?)";
+    private const FIND_BY_ID_QUERY   = "SELECT * FROM categorias WHERE id=:id";
     private const FIND_BY_NAME_QUERY = "SELECT * FROM categorias WHERE nombre=:name";
-    private const UPDATE_QUERY = "UPDATE categorias SET nombre=? WHERE id=?";
+    private const UPDATE_QUERY       = "UPDATE categorias SET nombre=? WHERE id=?";
+    private const DELETE_BY_ID_QUERY = "DELETE FROM categorias WHERE id=?";
 
-    private $id = null;
+    private $id     = null;
     private $nombre = null;
 
     private static function new($id, $name) {
-        $cat = new Categoria;
-        $cat->id = $id;
-        $cat->nombre = $name;
-        return $cat;
+        $obj         = new Categoria;
+        $obj->id     = $id;
+        $obj->nombre = $name;
+        return $obj;
     }
 
     public function create($nombre) {
         $this->connect();
-
-        if (is_null($nombre)) {
-            throw new Exception("Name cannot be null");
-        }
 
         $stmt = $this->pdo->prepare(self::CREATE_QUERY);
         return $stmt->execute([$nombre]);
@@ -48,7 +45,7 @@ class Categoria extends Model {
     public function update() {
         $this->connect();
 
-        if (!isset($this->id)) {
+        if (is_null($this->id)) {
             throw new Exception("Missing id on the row to update");
         }
 
@@ -56,7 +53,14 @@ class Categoria extends Model {
         return $stmt->execute([$this->nombre, $this->id]);
     }
 
-    public function getID() {
+    public function delete($id) {
+        $this->connect();
+
+        $stmt = $this->pdo->prepare(self::DELETE_BY_ID_QUERY);
+        return $stmt->execute([$id]);
+    }
+
+    public function getId() {
         return $this->id;
     }
 
