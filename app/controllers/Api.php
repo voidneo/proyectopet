@@ -2,8 +2,18 @@
 
 class Api extends Controller {
 
-    private const STATUS_OK = 200;
-    private const STATUS_ACCEPTED = 202;
+    private const STATUS_OK           = 200;
+    private const STATUS_CREATED      = 201;
+    private const STATUS_ACCEPTED     = 202;
+    private const STATUS_NO_CONTENT   = 204;
+    private const STATUS_BAD_REQUEST  = 400;
+    private const STATUS_UNAUTHORIZED = 401;
+    private const STATUS_FORBIDDEN    = 403;
+    private const STATUS_NOT_FOUND    = 404;
+    
+        public function __construct() {
+            header('Content-type: application/json; charset=utf-8');
+        }
 
     private static function exist($keys = [], $method = "GET") {
         if($method == "GET") {
@@ -21,35 +31,35 @@ class Api extends Controller {
         return true;
     }
 
-    private static function send($status, $message, $content = []) {
+    private static function send($status, $error, $content = []) {
         echo json_encode([
-            "status" => $status,
-            "message" => $message,
+            "status"  => $status,
+            "error"   => $error,
             "content" => $content
         ]);
-    }
-
-    public function __construct() {
-        header('Content-type: application/json; charset=utf-8');
     }
 
     public function index($data = []) {}
 
     public function authenticate($data = []) {
         if(!self::exist(["user", "pass"], "POST")) {
-            self::send(self::STATUS_ACCEPTED, "Missing essential information");
+            self::send(self::STATUS_BAD_REQUEST, "Missing essential information");
             return;
         }
 
+        $this->load_model("Usuario");
+        $user = new Usuario;
+        $user = $user->findByCI($_POST["user"]);
 
-        // TODO: sanitize values
-        // TODO: check for usernames with these credentials
-        if($_POST["user"] == "admin" && $_POST["pass"] == "1234") {
-            self::send(self::STATUS_OK, "success", ["token" => hash("sha1", random_bytes(8))]);
+        // TODO: check for user's password hash
+        if($user) {
+            // Si la contrasenia esta mal retornar contra invalida
+
+            self::send(self::STATUS_OK, "", ["token" => hash("sha1", random_bytes(8))]);
             return;
         }
         
-        self::send(self::STATUS_ACCEPTED, "Credentials are invalid");
+        self::send(self::STATUS_NOT_FOUND, "Usuario invalido");
     }
 
     public function user($data = []) {
