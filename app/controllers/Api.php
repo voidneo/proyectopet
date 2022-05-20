@@ -51,12 +51,17 @@ class Api extends Controller {
         $user = new Usuario;
         $user = $user->findByCI($_POST["user"]);
 
-        // TODO: check for user's password hash
         if($user) {
-            // Si la contrasenia esta mal retornar contra invalida
+            $pwd_hash = password_hash($_POST["pass"], PASSWORD_DEFAULT);
 
-            self::send(self::STATUS_OK, "", ["token" => hash("sha1", random_bytes(8))]);
-            return;
+            if($pwd_hash == $user->getContrasena()) {
+                self::send(self::STATUS_OK, "", ["token" => hash("sha1", random_bytes(8))]);
+                return;
+            } else {
+                self::send(self::STATUS_NOT_FOUND, "Contrasena invalida");
+                return;
+            }
+
         }
         
         self::send(self::STATUS_NOT_FOUND, "Usuario invalido");
