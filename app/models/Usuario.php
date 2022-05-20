@@ -42,16 +42,19 @@ class Usuario extends Model {
         $stmt = $this->pdo->prepare(self::FIND_BY_CI_QUERY);
         $stmt->execute([":ci" => $ci]);
         $row = $stmt->fetch();
-        return self::new(
-            $row["id"],
-            $row["ci"],
-            $row["nombre"],
-            $row["apellido"],
-            $row["correo"],
-            $row["telefono"],
-            $row["valido"],
-            $row["fecha_registro"],
-        );
+
+        if($row)
+            return self::new(
+                $row["id"],
+                $row["ci"],
+                $row["nombre"],
+                $row["apellido"],
+                $row["correo"],
+                $row["telefono"],
+                $row["valido"],
+                $row["fecha_registro"],
+            );
+        else return false;
     }
 
     public function getAll($limit = ["offset" => 0, "row_count" => 0]) {
