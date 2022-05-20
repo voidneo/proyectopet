@@ -1,10 +1,10 @@
 <?php
 
 class Usuario extends Model {
-    private const CREATE_QUERY       = "INSERT INTO usuarios(ci, nombre, apellido, correo, telefono) VALUES(?,?,?,?,?)";
+    private const CREATE_QUERY       = "INSERT INTO usuarios(ci, nombre, apellido, correo, contrasena, telefono) VALUES(?,?,?,?,?)";
     private const FIND_BY_CI_QUERY   = "SELECT * FROM usuarios WHERE ci=:ci";
     private const GET_ALL_QUERY      = "SELECT * FROM usuarios";
-    private const UPDATE_QUERY       = "UPDATE usuarios SET ci=?, nombre=?, apellido=?, correo=?, telefono=?, valido=? WHERE id=?";
+    private const UPDATE_QUERY       = "UPDATE usuarios SET ci=?, nombre=?, apellido=?, correo=?, contrasena=?, telefono=?, valido=? WHERE id=?";
     private const DELETE_BY_CI_QUERY = "DELETE FROM usuarios WHERE ci=?";
 
     private $id             = null;
@@ -12,28 +12,30 @@ class Usuario extends Model {
     private $nombre         = null;
     private $apellido       = null;
     private $correo         = null;
+    private $contrasena     = null;
     private $telefono       = null;
     private $valido         = null;
     private $fecha_registro = null;
 
-    private static function new($id, $ci, $name, $surname, $email, $phone, $valid, $reg_Date) {
+    private static function new($id, $ci, $name, $surname, $email, $pwd, $phone, $valid, $reg_Date) {
         $obj                 = new Usuario;
         $obj->id             = $id;
         $obj->ci             = $ci;
         $obj->nombre         = $name;
         $obj->apellido       = $surname;
         $obj->correo         = $email;
+        $obj->contrasena     = $pwd;
         $obj->telefono       = $phone;
         $obj->valido         = $valid;
         $obj->fecha_registro = $reg_Date;
         return $obj;
     }
 
-    public function create($ci, $name, $surname, $email, $phone = "") {
+    public function create($ci, $name, $surname, $email, $pwd, $phone = "") {
         $this->connect();
 
         $stmt = $this->pdo->prepare(self::CREATE_QUERY);
-        return $stmt->execute([$ci, $name, $surname, $email, $phone]);
+        return $stmt->execute([$ci, $name, $surname, $email, $pwd, $phone]);
     }
 
     public function findByCI($ci) {
@@ -50,6 +52,7 @@ class Usuario extends Model {
                 $row["nombre"],
                 $row["apellido"],
                 $row["correo"],
+                $row["contrasena"],
                 $row["telefono"],
                 $row["valido"],
                 $row["fecha_registro"],
@@ -82,6 +85,7 @@ class Usuario extends Model {
                 $row["nombre"],
                 $row["apellido"],
                 $row["correo"],
+                $row["contrasena"],
                 $row["telefono"],
                 $row["valido"],
                 $row["fecha_registro"],
@@ -104,6 +108,7 @@ class Usuario extends Model {
             $this->nombre,
             $this->apellido,
             $this->correo,
+            $this->contrasena,
             $this->telefono,
             $this->valido,
             $this->id
@@ -151,6 +156,14 @@ class Usuario extends Model {
 
     public function setCorreo($val) {
         $this->correo = $val;
+    }
+
+    public function getContrasena() {
+        return $this->correo;
+    }
+
+    public function setContrasena($val) {
+        $this->contrasena = $val;
     }
 
     public function getTelefono() {
