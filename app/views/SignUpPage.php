@@ -84,27 +84,27 @@
             <h1 class="title"><?php echo $data["title"]; ?></h1>
             <div class="field">
                 <label>Cedula de identidad</label><br />
-                <input id="ci" name="ci" type="text" placeholder="Cedula sin puntos ni guioes" /></br>
+                <input id="ci" name="ci" type="text" placeholder="Cedula sin puntos ni guiones" required></br>
                 <div class="border"></div>
             </div>
             <div class="field">
                 <label>Correo elecrt&oacute;nico</label><br />
-                <input id="correo" name="correo" type="text" placeholder="correo@dominio.com" /></br>
+                <input id="correo" name="correo" type="text" placeholder="correo@dominio.com" required></br>
                 <div class="border"></div>
             </div>
             <div class="field">
                 <label>Nombre</label><br />
-                <input id="nombre" name="nombre" type="text" placeholder="Primer nombre" /></br>
+                <input id="nombre" name="nombre" type="text" placeholder="Primer nombre" required></br>
                 <div class="border"></div>
             </div>
             <div class="field">
                 <label>Apellido</label><br />
-                <input id="apellido" name="apellido" type="text" placeholder="Primer apellido" /></br>
+                <input id="apellido" name="apellido" type="text" placeholder="Primer apellido" required></br>
                 <div class="border"></div>
             </div>
             <div class="field">
                 <label>Contrasena</label></br>
-                <input id="pass" name="pass" type="password" placeholder="●●●●●●●●●●●●" /><br />
+                <input id="pass" name="pass" type="password" placeholder="●●●●●●●●●●●●" required><br />
                 <div class="border"></div>
             </div>
             <input type="hidden" id="security_hash" name="hash" value="<?php echo $data["security_hash"] ?>" />
