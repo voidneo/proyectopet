@@ -1,9 +1,6 @@
 <?php
 
 class Signup extends Controller {
-    protected $model;
-    protected $view;
-
     public function index($data = []) {
         if(isset($_SESSION['token'])) {
             header("Location: ./");
