@@ -8,7 +8,7 @@ CREATE TABLE usuarios(
     apellido VARCHAR(16) NOT NULL,
     correo VARCHAR(32) NOT NULL,
     telefono CHAR(8), -- sacar telefonos a tabla aparte?
-    valido BOOLEAN DEFAULT 0
+    valido BOOLEAN DEFAULT 0,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -22,6 +22,6 @@ CREATE TABLE articulos(
     titulo VARCHAR(64) NOT NULL,
     cuerpo TEXT NOT NULL, -- varchar hasta 65535 bytes, text 65kb en adelante
     url_imagen VARCHAR(64),
-    id_categoria INT NOT NULL REFERENCES categorias(id)
+    id_categoria INT NOT NULL REFERENCES categorias(id),
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
