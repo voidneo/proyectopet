@@ -1,11 +1,11 @@
 <?php
 
 class Usuario extends Model {
-    private const CREATE_QUERY                  = "INSERT INTO usuarios(ci, nombre, apellido, correo, telefono) VALUES(?,?,?,?,?)";
-    private const FIND_BY_CI_QUERY              = "SELECT * FROM usuarios WHERE ci=:ci";
-    private const GET_ALL_QUERY                 = "SELECT * FROM usuarios";
-    private const UPDATE_QUERY                  = "UPDATE usuarios SET ci=?, nombre=?, apellido=?, correo=?, telefono=?, valido=? WHERE id=?";
-    private const DELETE_BY_CI_QUERY            = "DELETE FROM usuarios WHERE ci=?";
+    private const CREATE_QUERY       = "INSERT INTO usuarios(ci, nombre, apellido, correo, telefono) VALUES(?,?,?,?,?)";
+    private const FIND_BY_CI_QUERY   = "SELECT * FROM usuarios WHERE ci=:ci";
+    private const GET_ALL_QUERY      = "SELECT * FROM usuarios";
+    private const UPDATE_QUERY       = "UPDATE usuarios SET ci=?, nombre=?, apellido=?, correo=?, telefono=?, valido=? WHERE id=?";
+    private const DELETE_BY_CI_QUERY = "DELETE FROM usuarios WHERE ci=?";
 
     private $id             = null;
     private $ci             = null;
