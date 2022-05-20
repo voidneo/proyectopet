@@ -4,7 +4,7 @@ window.T = async () => {
 	formData.append("pass", document.getElementById("pass").value);
 	formData.append("hash", document.getElementById("hash").value);
 
-	return await fetch("./api/auth.php", {
+	return await fetch("./api/authenticate", {
 		method: "POST",
 		body: formData,
 	});
@@ -18,14 +18,14 @@ document.getElementById("form").addEventListener("submit", (evt) => {
 	formData.append("pass", document.getElementById("pass").value);
 	formData.append("hash", document.getElementById("hash").value);
 
-	fetch("./api/auth.php", {
+	fetch("./api/authenticate", {
 		method: "POST",
 		body: formData,
 	})
 		.then((res) => res.json())
 		.then((data) => {
 			console.log(data);
-			if (data["message"]) {
+			if (data["message"] && data["message"] != "success") {
 				document.getElementById("feedback").innerText = data["message"];
 			} else {
 				url = new URL(window.location.href);
