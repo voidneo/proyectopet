@@ -12,7 +12,7 @@ class Login extends Controller {
         $_SESSION['security_hash'] = hash('sha1', random_bytes(8));
 
         $data["title"] = "Iniciar sesion";
-        $data["hash"] = $_SESSION['security_hash'];
+        $data["security_hash"] = $_SESSION['security_hash'];
 
         $this->load_view("LoginPage", $data);
     }
