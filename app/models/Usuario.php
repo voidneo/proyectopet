@@ -1,7 +1,7 @@
 <?php
 
 class Usuario extends Model {
-    private const CREATE_QUERY       = "INSERT INTO usuarios(ci, nombre, apellido, correo, contrasena, telefono) VALUES(?,?,?,?,?)";
+    private const CREATE_QUERY       = "INSERT INTO usuarios(ci, nombre, apellido, correo, contrasena, rol, telefono) VALUES(?,?,?,?,?,?,?)";
     private const FIND_BY_CI_QUERY   = "SELECT * FROM usuarios WHERE ci=:ci";
     private const GET_ALL_QUERY      = "SELECT * FROM usuarios";
     private const UPDATE_QUERY       = "UPDATE usuarios SET ci=?, nombre=?, apellido=?, correo=?, contrasena=?, telefono=?, valido=? WHERE id=?";
@@ -14,10 +14,11 @@ class Usuario extends Model {
     private $correo         = null;
     private $contrasena     = null;
     private $telefono       = null;
+    private $rol            = null;
     private $valido         = null;
     private $fecha_registro = null;
 
-    private static function new($id, $ci, $name, $surname, $email, $pwd, $phone, $valid, $reg_Date) {
+    private static function new($id, $ci, $name, $surname, $email, $pwd, $role, $phone, $valid, $reg_Date) {
         $obj                 = new Usuario;
         $obj->id             = $id;
         $obj->ci             = $ci;
@@ -25,17 +26,18 @@ class Usuario extends Model {
         $obj->apellido       = $surname;
         $obj->correo         = $email;
         $obj->contrasena     = $pwd;
+        $obj->rol            = $role;
         $obj->telefono       = $phone;
         $obj->valido         = $valid;
         $obj->fecha_registro = $reg_Date;
         return $obj;
     }
 
-    public function create($ci, $name, $surname, $email, $pwd, $phone = "") {
+    public function create($ci, $name, $surname, $email, $pwd, $role = "e", $phone = "") {
         $this->connect();
 
         $stmt = $this->pdo->prepare(self::CREATE_QUERY);
-        return $stmt->execute([$ci, $name, $surname, $email, $pwd, $phone]);
+        return $stmt->execute([$ci, $name, $surname, $email, $pwd, $role, $phone]);
     }
 
     public function findByCI($ci) {
@@ -53,6 +55,7 @@ class Usuario extends Model {
                 $row["apellido"],
                 $row["correo"],
                 $row["contrasena"],
+                $row["rol"],
                 $row["telefono"],
                 $row["valido"],
                 $row["fecha_registro"],
@@ -86,6 +89,7 @@ class Usuario extends Model {
                 $row["apellido"],
                 $row["correo"],
                 $row["contrasena"],
+                $row["rol"],
                 $row["telefono"],
                 $row["valido"],
                 $row["fecha_registro"],
@@ -164,6 +168,14 @@ class Usuario extends Model {
 
     public function setContrasena($val) {
         $this->contrasena = $val;
+    }
+
+    public function getRol() {
+        return $this->rol;
+    }
+
+    public function setRol($val) {
+        $this->rol = $val;
     }
 
     public function getTelefono() {
