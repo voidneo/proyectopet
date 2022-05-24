@@ -8,8 +8,8 @@ CREATE TABLE usuarios(
     apellido VARCHAR(16) NOT NULL,
     correo VARCHAR(32) NOT NULL,
     contrasena CHAR(60) NOT NULL,
-    rol CHAR(1),
     telefono CHAR(8), -- sacar telefonos a tabla aparte?
+    rol CHAR(1) DEFAULT 'e',
     valido BOOLEAN DEFAULT 0,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
