@@ -84,22 +84,21 @@
             <h1 class="title">Iniciar sesion</h1>
             <div class="field">
                 <label>Usuario</label><br />
-                <input id="user" name="user" type="text" placeholder="Nombre de usuario" /></br>
+                <input id="cedula" name="cedula" type="text" placeholder="Nombre de usuario" /></br>
                 <div class="border"></div>
             </div>
             <div class="field">
                 <label>Contrasena</label></br>
-                <input id="pass" name="pass" type="password" placeholder="●●●●●●●●●●●●" /><br />
+                <input id="contrasena" name="contrasena" type="password" placeholder="●●●●●●●●●●●●" /><br />
                 <div class="border"></div>
             </div>
-            <input type="hidden" id="hash" name="hash" value="<?php echo $data["hash"] ?>" />
+            <input type="hidden" id="security_hash" name="security_hash" value="<?php echo $data["security_hash"] ?>" />
             <div>
                 <p id="feedback"></p>
             </div>
             <input id="enviar" type="submit" value="Iniciar sesion" />
         </form>
     </div>
-
     <script type="text/javascript" src="./scripts/login-form.js"></script>
 </body>
 
