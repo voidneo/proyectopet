@@ -84,7 +84,7 @@
             <h1 class="title"><?php echo $data["title"]; ?></h1>
             <div class="field">
                 <label>Cedula de identidad</label><br />
-                <input id="ci" name="ci" type="text" placeholder="Cedula sin puntos ni guiones" required></br>
+                <input id="cedula" name="cedula" type="text" placeholder="Cedula sin puntos ni guiones" required></br>
                 <div class="border"></div>
             </div>
             <div class="field">
@@ -104,16 +104,17 @@
             </div>
             <div class="field">
                 <label>Contrasena</label></br>
-                <input id="pass" name="pass" type="password" placeholder="●●●●●●●●●●●●" required><br />
+                <input id="contrasena" name="contrasena" type="password" placeholder="●●●●●●●●●●●●" required><br />
                 <div class="border"></div>
             </div>
-            <input type="hidden" id="security_hash" name="hash" value="<?php echo $data["security_hash"] ?>" />
+            <input type="hidden" id="security_hash" name="security_hash" value="<?php echo $data["security_hash"] ?>" />
             <div>
                 <p id="feedback"></p>
             </div>
             <input id="enviar" type="submit" value="Registrarse" />
         </form>
     </div>
+    <script type="text/javascript" src="./scripts/signup-form.js"></script>
 </body>
 
 </html>
