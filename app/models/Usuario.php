@@ -159,7 +159,7 @@ class Usuario extends Model {
     }
 
     public function getContrasena() {
-        return $this->correo;
+        return $this->contrasena;
     }
 
     public function setContrasena($val) {
