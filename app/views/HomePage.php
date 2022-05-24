@@ -1,8 +1,10 @@
 <h3>Homepage</h3>
 <?php
 
-if(isset($data["user"])) {
-    echo "<h4>Logged in as " . $data["user"]->get_name() . "</h4>";
+if(isset($data["token"])) {
+    echo "<h4>Bienvenido " . $data["nombre"] . " " . $data["apellido"] . "</h4>";
+} else {
+    echo "<h4>Bienvenido usuario</h4>";
 }
 
-var_dump($data); ?>
+?>
