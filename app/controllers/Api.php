@@ -57,19 +57,16 @@ class Api extends Controller {
         $user = $user->findByCI($_POST["cedula"]);
 
         if($user) {
-            $pwd_hash = hash("sha1", $_POST["contrasena"]);
-
-            if($pwd_hash == $user->getContrasena()) {
+            if(password_verify($_POST["contrasena"], $user->getContrasena())) {
                 $_SESSION["token"] = hash("sha1", random_bytes(8));
                 $_SESSION["cedula"] = $user->getCI();
                 
                 self::send(self::STATUS_OK, "", ["token" => $_SESSION["token"]]);
                 return;
-            } else {
-                self::send(self::STATUS_NOT_FOUND, "Contrasena invalida");
-                return;
             }
 
+            self::send(self::STATUS_NOT_FOUND, "Contrasena invalida");
+            return;
         }
         
         self::send(self::STATUS_NOT_FOUND, "Usuario invalido");
@@ -82,8 +79,7 @@ class Api extends Controller {
         }
 
         // TODO: validate data
-        $pwd_hash = hash("sha1", $_POST["contrasena"]);
-
+        
         $this->load_model("Usuario");
         $user = new Usuario;
 
@@ -92,7 +88,7 @@ class Api extends Controller {
             $_POST["nombre"],
             $_POST["apellido"],
             $_POST["correo"],
-            $pwd_hash
+            password_hash($_POST["contrasena"], PASSWORD_DEFAULT)
         )) {
             $this->authenticate();
             return;
