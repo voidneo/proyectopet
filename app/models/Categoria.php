@@ -4,6 +4,7 @@ class Categoria extends Model {
     private const CREATE_QUERY       = "INSERT INTO categorias(nombre) VALUES(?)";
     private const FIND_BY_ID_QUERY   = "SELECT * FROM categorias WHERE id=:id";
     private const FIND_BY_NAME_QUERY = "SELECT * FROM categorias WHERE nombre=:name";
+    private const GET_ALL_QUERY      = "SELECT * FROM categorias";
     private const UPDATE_QUERY       = "UPDATE categorias SET nombre=? WHERE id=?";
     private const DELETE_BY_ID_QUERY = "DELETE FROM categorias WHERE id=?";
 
@@ -31,6 +32,34 @@ class Categoria extends Model {
         $stmt->execute([":id" => $id]);
         $row = $stmt->fetch();
         return self::new($row["id"], $row["nombre"]);
+    }
+
+    public function getAll($limit = ["offset" => 0, "row_count" => 0]) {
+        $this->connect();
+        $pagination = "";
+        $offset     = $limit["offset"];
+        $count      = $limit["row_count"];
+
+        if($offset != 0 && $count != 0) {
+            $pagination = " LIMIT $offset, $count";
+        }
+        else if($count != 0) {
+            $pagination = " LIMIT $count";
+        }
+
+        $stmt = $this->pdo->prepare(self::GET_ALL_QUERY . $pagination);
+        $stmt->execute([]);
+        $rslt = $stmt->fetchAll();
+        $objs = [];
+
+        foreach($rslt as $row) {
+            array_push($objs, self::new(
+                $row["id"],
+                $row["nombre"]
+            ));
+        }
+
+        return $objs;
     }
 
     public function findByNombre($name) {
