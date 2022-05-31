@@ -1,11 +1,12 @@
 <?php
 
 class Articulo extends Model {
-    private const CREATE_QUERY                  = "INSERT INTO articulos(titulo, cuerpo, url_imagen, id_categoria, fecha) VALUES(?,?,?,?,?)";
+    private const CREATE_QUERY                  = "INSERT INTO articulos(titulo, cuerpo, url_imagen, id_categoria) VALUES(?,?,?,?)";
     private const FIND_BY_ID_QUERY              = "SELECT * FROM articulos WHERE id=:id";
     private const SEARCH_BY_TITLE_PARTIAL_QUERY = "SELECT * FROM articulos WHERE titulo LIKE :title";
     private const SEARCH_BY_CATEGORY_QUERY      = "SELECT * FROM articulos WHERE id_categoria=:id";
     private const SEARCH_BY_DATE_QUERY          = "SELECT * FROM articulos WHERE fecha=:creationdate";
+    private const SEARCHS_BY_CAT_AND_DATE_QUERY = "SELECT * FROM articulos WHERE id_categoria=:id AND fecha LIKE :yyyymmdd";
     private const GET_ALL_QUERY                 = "SELECT * FROM articulos";
     private const UPDATE_QUERY                  = "UPDATE articulos SET titulo=?, cuerpo=?, url_imagen=?, id_categoria=?, fecha=? WHERE id=?";
     private const DELETE_BY_ID_QUERY            = "DELETE FROM articulos WHERE id=?";
@@ -59,6 +60,53 @@ class Articulo extends Model {
 
         $stmt = $this->pdo->prepare(self::SEARCH_BY_TITLE_PARTIAL_QUERY);
         $stmt->execute([":title" => "%$title%"]);
+        $rslt = $stmt->fetchAll();
+        $objs = [];
+
+        foreach($rslt as $row) {
+            array_push($objs, self::new(
+                $row["id"],
+                $row["titulo"],
+                $row["cuerpo"],
+                $row["url_imagen"],
+                $row["id_categoria"],
+                $row["fecha"]
+            ));
+        }
+
+        return $objs;
+    }
+
+    public function searchByCategoria($cat) {
+        $this->connect();
+
+        $stmt = $this->pdo->prepare(self::SEARCH_BY_CATEGORY_QUERY);
+        $stmt->execute([":id" => "$cat"]);
+        $rslt = $stmt->fetchAll();
+        $objs = [];
+
+        foreach($rslt as $row) {
+            array_push($objs, self::new(
+                $row["id"],
+                $row["titulo"],
+                $row["cuerpo"],
+                $row["url_imagen"],
+                $row["id_categoria"],
+                $row["fecha"]
+            ));
+        }
+
+        return $objs;
+    }
+
+    public function searchByCategoryAndDate($cat, $year, $month = "__", $day = "__") {
+        $this->connect();
+
+        $stmt = $this->pdo->prepare(self::SEARCHS_BY_CAT_AND_DATE_QUERY);
+        $stmt->execute([
+            ":id" => "$cat",
+            ":yyyymmdd" => "$year-$month-$day%"
+        ]);
         $rslt = $stmt->fetchAll();
         $objs = [];
 
@@ -167,5 +215,9 @@ class Articulo extends Model {
 
     public function setIdCategoria($cat_id) {
         $this->id_categoria = $cat_id;
+    }
+
+    public function getFecha() {
+        return $this->fecha;
     }
 }
