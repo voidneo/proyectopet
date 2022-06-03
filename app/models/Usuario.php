@@ -1,8 +1,10 @@
 <?php
 
 class Usuario extends Model {
+    // TODO: update password only query
     private const CREATE_QUERY       = "INSERT INTO usuarios(ci, nombre, apellido, correo, contrasena, rol, telefono) VALUES(?,?,?,?,?,?,?)";
     private const FIND_BY_CI_QUERY   = "SELECT * FROM usuarios WHERE ci=:ci";
+    private const FIND_BY_ID_QUERY   = "SELECT * FROM usuarios WHERE id=:id";
     private const GET_ALL_QUERY      = "SELECT * FROM usuarios";
     private const UPDATE_QUERY       = "UPDATE usuarios SET ci=?, nombre=?, apellido=?, correo=?, contrasena=?, telefono=?, valido=? WHERE id=?";
     private const DELETE_BY_CI_QUERY = "DELETE FROM usuarios WHERE ci=?";
@@ -45,6 +47,29 @@ class Usuario extends Model {
 
         $stmt = $this->pdo->prepare(self::FIND_BY_CI_QUERY);
         $stmt->execute([":ci" => $ci]);
+        $row = $stmt->fetch();
+
+        if($row)
+            return self::new(
+                $row["id"],
+                $row["ci"],
+                $row["nombre"],
+                $row["apellido"],
+                $row["correo"],
+                $row["contrasena"],
+                $row["rol"],
+                $row["telefono"],
+                $row["valido"],
+                $row["fecha_registro"],
+            );
+        else return false;
+    }
+
+    public function findById($id) {
+        $this->connect();
+
+        $stmt = $this->pdo->prepare(self::FIND_BY_ID_QUERY);
+        $stmt->execute([":id" => $id]);
         $row = $stmt->fetch();
 
         if($row)
