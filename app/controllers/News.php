@@ -22,8 +22,16 @@ class News extends Controller {
 
         // If an ID was provided, load article straight up
         if($id) {
-            $data["article"] = $art->findById($id);
-            $this->load_view("AtriclePage", $data);
+            $art = $art->findById($id);
+            // If the article exists, load the article view
+            if($art) {
+                $data["article"] = $art->findById($id);
+                $this->load_view("AtriclePage", $data);
+                return;
+            }
+
+            // Else display error view
+            echo "Article not found";
             return;
         }
 
