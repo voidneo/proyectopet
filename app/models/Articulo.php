@@ -10,8 +10,7 @@ class Articulo extends Model {
     private const GET_ALL_QUERY                 = "SELECT * FROM articulos";
     private const UPDATE_QUERY                  = "UPDATE articulos SET titulo=?, cuerpo=?, url_imagen=?, id_categoria=?, fecha=? WHERE id=?";
     private const DELETE_BY_ID_QUERY            = "DELETE FROM articulos WHERE id=?";
-    // TODO: add search by fecha method
-    // TODO: add search by category method
+    // TODO: add result pagination
     // TODO: add support to clause ORDER BY
 
     private $id           = null;
