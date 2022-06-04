@@ -1,12 +1,15 @@
 <?php
 
 class Categoria extends Model {
-    private const CREATE_QUERY       = "INSERT INTO categorias(nombre) VALUES(?)";
-    private const FIND_BY_ID_QUERY   = "SELECT * FROM categorias WHERE id=:id";
-    private const FIND_BY_NAME_QUERY = "SELECT * FROM categorias WHERE nombre=:name";
-    private const GET_ALL_QUERY      = "SELECT * FROM categorias";
-    private const UPDATE_QUERY       = "UPDATE categorias SET nombre=? WHERE id=?";
-    private const DELETE_BY_ID_QUERY = "DELETE FROM categorias WHERE id=?";
+    private const CREATE_QUERY        = "INSERT INTO categorias(nombre) VALUES(?)";
+    private const FIND_BY_ID_QUERY    = "SELECT * FROM categorias WHERE id=:id";
+    private const FIND_BY_NAME_QUERY  = "SELECT * FROM categorias WHERE nombre=:name";
+    private const GET_ROW_COUNT_QUERY = "SELECT COUNT(id) AS row_count FROM categorias";
+    private const GET_ALL_QUERY       = "SELECT * FROM categorias";
+    private const UPDATE_QUERY        = "UPDATE categorias SET nombre=? WHERE id=?";
+    private const DELETE_BY_ID_QUERY  = "DELETE FROM categorias WHERE id=?";
+
+    // TODO: engineer a query builder
 
     private $id     = null;
     private $nombre = null;
@@ -34,32 +37,49 @@ class Categoria extends Model {
         return self::new($row["id"], $row["nombre"]);
     }
 
-    public function getAll($limit = ["offset" => 0, "row_count" => 0]) {
+    public function getRowCount() {
+        $this->connect();
+        $stmt = $this->pdo->prepare(self::GET_ROW_COUNT_QUERY);
+        $stmt->execute([]);
+        $rslt = $stmt->fetch();
+
+        return $rslt["row_count"];
+    }
+
+    public function getAll($limit = ["page" => 1, "rows_per_page" => 5], $orderby = ["column" => "id", "order" => "ASC"]) {
         $this->connect();
         $pagination = "";
-        $offset     = $limit["offset"];
-        $count      = $limit["row_count"];
 
-        if($offset != 0 && $count != 0) {
+        $count      = $limit["rows_per_page"];
+        $offset     = ($limit["page"] - 1) * $count;
+
+        if($offset != 0) {
             $pagination = " LIMIT $offset, $count";
         }
-        else if($count != 0) {
+        else {
             $pagination = " LIMIT $count";
         }
 
-        $stmt = $this->pdo->prepare(self::GET_ALL_QUERY . $pagination);
+        $order = " ORDER BY " . $orderby["column"] . " " . $orderby["order"] . " ";
+
+        $stmt = $this->pdo->prepare(self::GET_ALL_QUERY . $order . $pagination);
         $stmt->execute([]);
         $rslt = $stmt->fetchAll();
-        $objs = [];
 
+        $filtered_results = [];
         foreach($rslt as $row) {
-            array_push($objs, self::new(
-                $row["id"],
-                $row["nombre"]
-            ));
+            array_push($filtered_results, [
+                "id" => $row["id"],
+                "nombre" => $row["nombre"]
+            ]);
         }
 
-        return $objs;
+        return [
+            "page" => $limit["page"],
+            "rows" => count($rslt),
+            "total_rows" => $this->getRowCount(),
+            "results" => $filtered_results
+        ];
     }
 
     public function findByNombre($name) {
