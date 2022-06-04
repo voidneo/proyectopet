@@ -11,9 +11,8 @@ class App extends Controller {
     public function parse_url() {
         if(isset($_GET["url"])) {
             return explode("/", filter_var(rtrim($_GET["url"], "/"), FILTER_SANITIZE_URL));
-        } else {
-            return [];
         }
+        return [];
     }
 
 }
