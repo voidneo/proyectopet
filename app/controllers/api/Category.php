@@ -1,6 +1,5 @@
 <?php
 
-// TODO: code CRUD for Category API
 class Category extends ApiObject {
 
     public function create() {
@@ -25,17 +24,15 @@ class Category extends ApiObject {
     }
 
     public function read() {
-        /*if (!self::exist(["security_hash"])) {
+        if (!self::exist(["security_hash"])) {
             self::send(self::STATUS_BAD_REQUEST, "Missing essential information");
             return;
         }
 
-        if (!self::isSecurityHashValid()) return;
-*/
+        if (!self::isSecurityHashValid("GET")) return;
+
         $pagination = ["page" => 1, "rows_per_page" => 5];
         $orderby    = ["column" => "id", "order" => "ASC"];
-
-        //var_dump($_GET);
 
         if (self::exist(["pagination"])) {
             $pag = json_decode($_GET["pagination"]);
