@@ -35,8 +35,14 @@ class ApiObject extends Controller {
         ]);
     }
 
-    protected static function isSecurityHashValid() {
-        $matches = $_POST["security_hash"] == $_SESSION["security_hash"];
+    protected static function isSecurityHashValid($method = "POST") {
+        if ($method == "GET") {
+            $method = $_GET;
+        } else if ($method == "POST") {
+            $method = $_POST;
+        }
+
+        $matches = $method["security_hash"] == $_SESSION["security_hash"];
         if (!$matches) {
             self::send(self::STATUS_BAD_REQUEST, "Security key mismatch");
         }
