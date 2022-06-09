@@ -31,20 +31,25 @@ class Category extends ApiObject {
 
         if (!self::isSecurityHashValid("GET")) return;
 
-        $pagination = ["page" => 1, "rows_per_page" => 5];
-        $orderby    = ["column" => "id", "order" => "ASC"];
+        $search_query = "";
+        $pagination   = ["page" => 1, "length" => 5];
+        $sort         = ["column" => "id", "order" => "ASC"];
 
-        if (self::exist(["pagination"])) {
-            $pag = json_decode($_GET["pagination"]);
+        if (self::exist(["query"])) {
+            $search_query = $_GET["query"];
+        }
+
+        if (self::exist(["page"])) {
+            $pag = json_decode($_GET["page"]);
             $pagination = [
-                "page"          => $pag->page,
-                "rows_per_page" => $pag->rows_per_page
+                "page"   => $pag->page,
+                "length" => $pag->length
             ];
         }
 
-        if (self::exist(["order"])) {
-            $ord = json_decode($_GET["order"]);
-            $orderby    = [
+        if (self::exist(["sort"])) {
+            $ord = json_decode($_GET["sort"]);
+            $sort    = [
                 "column" => $ord->column,
                 "order"  => $ord->order
             ];
@@ -52,7 +57,7 @@ class Category extends ApiObject {
 
         $this->load_model("Categoria");
         $cat = new Categoria;
-        $cat = $cat->getAll($pagination, $orderby);
+        $cat = $cat->getAll($search_query, $sort, $pagination);
 
         if($cat) {
             self::send(self::STATUS_OK, "", $cat);
