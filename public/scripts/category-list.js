@@ -1,32 +1,39 @@
 // TODO: implement search by value
-// TODO: load same page number when refreshing the table after creating a category
 
-async function getCategories(
-	pagination = { page: 1, rows_per_page: 5 },
-	order = { column: "id", order: "ASC" }
-) {
-    let securityHashInput = document.querySelector("#security-hash");
+async function getCategories() {
+    let search_query  = document.querySelector("#search-box").value;
+    let current_page  = document.querySelector("#loaded-page").value;
+    let page_length   = document.querySelector("#rows-per-page").value;
+	let sort_col_name = document.querySelector("#order-column").value;
+	let sort_order    = document.querySelector("#order-direction").value;
+    let security_hash = document.querySelector("#security-hash").value;
+
+	let pag = JSON.stringify({
+		page:   current_page,
+		length: page_length
+	});
+
+	let ord = JSON.stringify({
+		column: sort_col_name,
+		order:  sort_order
+	});
+
     // TODO: find workaround url object
 	url = new URL("http://localhost/proyectopet/public/api/category/read");
-	a = JSON.stringify(pagination);
-	b = JSON.stringify(order);
-    c = securityHashInput.value;
-	url.searchParams.append("pagination", a);
-	url.searchParams.append("order", b);
-	url.searchParams.append("security_hash", c);
+	url.searchParams.append("query", search_query);
+	url.searchParams.append("page", pag);
+	url.searchParams.append("sort", ord);
+	url.searchParams.append("security_hash", security_hash);
 
 	return await fetch(url, { method: "GET" });
 }
 
 function createCategory(name) {
-    let pageLengthCtrl     = document.querySelector("#rows-per-page");
-	let orderColumnCtrl    = document.querySelector("#order-column");
-	let orderDirectionCtrl = document.querySelector("#order-direction");
-    let securityHashInput  = document.querySelector("#security-hash");
+    let security_hash = document.querySelector("#security-hash").value;
 
 	formData = new FormData();
 	formData.append("nombre", name);
-    formData.append("security_hash", securityHashInput.value);
+    formData.append("security_hash", security_hash);
 
 	fetch("./api/category/create", {
 		method: "POST",
@@ -37,10 +44,7 @@ function createCategory(name) {
 			if (data["error"]) {
 				console.log(data["error"]);
 			} else {
-                getCategories(
-                    { page: 1, rows_per_page: pageLengthCtrl.value },
-                    { column: orderColumnCtrl.value, order: orderDirectionCtrl.value }
-                )
+                getCategories()
                     .then((response) => response.json())
                     .then(refreshTable)
                     .catch(console.log);
@@ -107,11 +111,8 @@ function removeAllChildren(id) {
 
 function generatePagination(results) {
 	const rows_per_page      = document.querySelector("#rows-per-page").value;
-	const orderColumnCtrl    = document.querySelector("#order-column");
-	const orderDirectionCtrl = document.querySelector("#order-direction");
 
 	const currentPage = results["content"]["page"];
-	const rows        = results["content"]["rows"];
 	const total_rows  = results["content"]["total_rows"];
 	const nOfPages    = Math.ceil(total_rows / rows_per_page);
 
@@ -128,14 +129,12 @@ function generatePagination(results) {
 		pages.innerHTML += " ";
 	}
 
+    let currentPageCtrl    = document.querySelector("#loaded-page");
+
 	for (let i = 1; i <= nOfPages; i++) {
-		let btn = document.querySelector("#page-" + i);
 		document.querySelector("#page-" + i).addEventListener("click", (evt) => {
-			let rowsPerPage = document.querySelector("#rows-per-page").value;
-			getCategories(
-				{ page: i, rows_per_page: rowsPerPage },
-				{ column: orderColumnCtrl.value, order: orderDirectionCtrl.value }
-			)
+			currentPageCtrl.value = i;
+			getCategories()
 				.then((response) => response.json())
 				.then(refreshTable)
 				.catch(console.log);
@@ -223,6 +222,8 @@ function refreshTable(data) {
 }
 
 window.addEventListener("load", (evt) => {
+	let searchBoxCtrl      = document.querySelector("#search-box");
+	let searchBtn          = document.querySelector("#search-btn");
 	let pageLengthCtrl     = document.querySelector("#rows-per-page");
 	let idTableHeader      = document.querySelector("#column-id");
 	let nameTableHeader    = document.querySelector("#column-nombre");
@@ -230,6 +231,13 @@ window.addEventListener("load", (evt) => {
 	let orderDirectionCtrl = document.querySelector("#order-direction");
 	let catNameInput       = document.querySelector("#cat-creation-name");
 	let catCreationBtn     = document.querySelector("#cat-creation-btn");
+
+	searchBtn.addEventListener("click", (evt) => {
+		getCategories()
+			.then((response) => response.json())
+			.then(refreshTable)
+			.catch(console.log);
+	});
 
 	idTableHeader.addEventListener("click", (evt) => {
 		if (orderColumnCtrl.value == "id") {
@@ -240,10 +248,7 @@ window.addEventListener("load", (evt) => {
 			orderDirectionCtrl.value = "asc";
 		}
 
-		getCategories(
-			{ page: 1, rows_per_page: pageLengthCtrl.value },
-			{ column: orderColumnCtrl.value, order: orderDirectionCtrl.value }
-		)
+		getCategories()
 			.then((response) => response.json())
 			.then(refreshTable)
 			.catch(console.log);
@@ -258,10 +263,7 @@ window.addEventListener("load", (evt) => {
 			orderDirectionCtrl.value = "asc";
 		}
 
-		getCategories(
-			{ page: 1, rows_per_page: pageLengthCtrl.value },
-			{ column: orderColumnCtrl.value, order: orderDirectionCtrl.value }
-		)
+		getCategories()
 			.then((response) => response.json())
 			.then(refreshTable)
 			.catch(console.log);
@@ -272,10 +274,7 @@ window.addEventListener("load", (evt) => {
 	});
 
 	pageLengthCtrl.addEventListener("change", (evt) => {
-		getCategories(
-			{ page: 1, rows_per_page: pageLengthCtrl.value },
-			{ column: orderColumnCtrl.value, order: orderDirectionCtrl.value }
-		)
+		getCategories()
 			.then((response) => response.json())
 			.then(refreshTable)
 			.catch(console.log);
@@ -283,14 +282,12 @@ window.addEventListener("load", (evt) => {
 
     catCreationBtn.addEventListener("click", evt => {
         if(catNameInput.value != "") {
+			// TODO: validate category name
             createCategory(catNameInput.value);
         }
     })
 
-	getCategories(
-		{ page: 1, rows_per_page: pageLengthCtrl.value },
-		{ column: orderColumnCtrl.value, order: orderDirectionCtrl.value }
-	)
+	getCategories()
 		.then((response) => response.json())
 		.then(refreshTable)
 		.catch(console.log);
