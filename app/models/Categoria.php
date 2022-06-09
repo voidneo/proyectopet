@@ -46,39 +46,57 @@ class Categoria extends Model {
         return $rslt["row_count"];
     }
 
-    public function getAll($limit = ["page" => 1, "rows_per_page" => 5], $orderby = ["column" => "id", "order" => "ASC"]) {
+    public function getAll($search_query = "", $sort = "", $page = "") {
         $this->connect();
-        $pagination = "";
+        $where_clause = "";
+        $order_clause = "";
+        $limit_clause = "";
+        $values       = [];
 
-        $count      = $limit["rows_per_page"];
-        $offset     = ($limit["page"] - 1) * $count;
+        // FIXME: order and limit clauses are vulnerable to SQL injections
 
-        if($offset != 0) {
-            $pagination = " LIMIT $offset, $count";
+        if (!empty($search_query)) {
+            $where_clause = " WHERE nombre LIKE :search_query";
+            $values["search_query"] = "%$search_query%";
         }
-        else {
-            $pagination = " LIMIT $count";
+
+        if(!empty($sort)) {     
+            $column = $sort["column"];
+            $order = $sort["order"];
+            $order_clause = " ORDER BY $column $order";
         }
 
-        $order = " ORDER BY " . $orderby["column"] . " " . $orderby["order"] . " ";
+        if (!empty($page)) {
+            $length = intval($page["length"]);
+            $offset = ($page["page"] - 1) * $length;
 
-        $stmt = $this->pdo->prepare(self::GET_ALL_QUERY . $order . $pagination);
-        $stmt->execute([]);
+            if ($offset != 0) {
+                $limit_clause = " LIMIT $offset, $length";
+            } else {
+                $limit_clause = " LIMIT $length";
+            }
+        }
+
+        $stmt = $this->pdo->prepare(self::GET_ALL_QUERY . $where_clause . $order_clause . $limit_clause);
+        $stmt->execute($values);
         $rslt = $stmt->fetchAll();
 
         $filtered_results = [];
-        foreach($rslt as $row) {
+        foreach ($rslt as $row) {
             array_push($filtered_results, [
-                "id" => $row["id"],
+                "id"     => $row["id"],
                 "nombre" => $row["nombre"]
             ]);
         }
 
+        $stmt = $this->pdo->prepare(self::GET_ROW_COUNT_QUERY . $where_clause . $order_clause);
+        $stmt->execute($values);
+        $rslt = $stmt->fetch();
+
         return [
-            "page" => $limit["page"],
-            "rows" => count($rslt),
-            "total_rows" => $this->getRowCount(),
-            "results" => $filtered_results
+            "page"       => $page["page"],
+            "total_rows" => $rslt["row_count"],
+            "results"    => $filtered_results
         ];
     }
 
