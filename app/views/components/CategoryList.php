@@ -13,6 +13,7 @@
                     <option>30</option>
                 </select>
             </td>
+            <input type="hidden" id="loaded-page" value="1"/>
             <input type="hidden" id="order-column" value="id"/>
             <input type="hidden" id="order-direction" value="asc"/>
         </tr>
