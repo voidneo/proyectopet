@@ -1,5 +1,3 @@
-// TODO: implement search by value
-
 async function getCategories() {
     let search_query  = document.querySelector("#search-box").value;
     let current_page  = document.querySelector("#loaded-page").value;
@@ -8,24 +6,17 @@ async function getCategories() {
 	let sort_order    = document.querySelector("#order-direction").value;
     let security_hash = document.querySelector("#security-hash").value;
 
-	let pag = JSON.stringify({
-		page:   current_page,
-		length: page_length
-	});
+	let url = "./api/category/read";
+	let params = `?
+	query=${search_query}
+	&page=${current_page}
+	&page_length=${page_length}
+	&sort_column=${sort_col_name}
+	&sort_order=${sort_order}
+	&security_hash=${security_hash}
+	`;
 
-	let ord = JSON.stringify({
-		column: sort_col_name,
-		order:  sort_order
-	});
-
-    // TODO: find workaround url object
-	url = new URL("http://localhost/proyectopet/public/api/category/read");
-	url.searchParams.append("query", search_query);
-	url.searchParams.append("page", pag);
-	url.searchParams.append("sort", ord);
-	url.searchParams.append("security_hash", security_hash);
-
-	return await fetch(url, { method: "GET" });
+	return await fetch(url + params, { method: "GET" });
 }
 
 function createCategory(name) {
@@ -237,6 +228,15 @@ window.addEventListener("load", (evt) => {
 			.then((response) => response.json())
 			.then(refreshTable)
 			.catch(console.log);
+	});
+
+	searchBoxCtrl.addEventListener("keyup", (evt) => {
+		if (evt.code == "Enter") {
+			getCategories()
+			.then((response) => response.json())
+			.then(refreshTable)
+			.catch(console.log);
+		}
 	});
 
 	idTableHeader.addEventListener("click", (evt) => {
