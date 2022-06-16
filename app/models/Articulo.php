@@ -4,14 +4,13 @@ class Articulo extends Model {
     private const CREATE_QUERY                  = "INSERT INTO articulos(titulo, cuerpo, url_imagen, id_categoria) VALUES(?,?,?,?)";
     private const FIND_BY_ID_QUERY              = "SELECT * FROM articulos WHERE id=:id";
     private const SEARCH_BY_TITLE_PARTIAL_QUERY = "SELECT * FROM articulos WHERE titulo LIKE :title";
+    private const GET_ROW_COUNT_QUERY           = "SELECT COUNT(id) AS row_count FROM articulos";
     private const SEARCH_BY_CATEGORY_QUERY      = "SELECT * FROM articulos WHERE id_categoria=:id";
     private const SEARCH_BY_DATE_QUERY          = "SELECT * FROM articulos WHERE fecha=:creationdate";
     private const SEARCHS_BY_CAT_AND_DATE_QUERY = "SELECT * FROM articulos WHERE id_categoria=:id AND fecha LIKE :yyyymmdd";
     private const GET_ALL_QUERY                 = "SELECT * FROM articulos";
     private const UPDATE_QUERY                  = "UPDATE articulos SET titulo=?, cuerpo=?, url_imagen=?, id_categoria=?, fecha=? WHERE id=?";
     private const DELETE_BY_ID_QUERY            = "DELETE FROM articulos WHERE id=?";
-    // TODO: add result pagination
-    // TODO: add support to clause ORDER BY
 
     private $id           = null;
     private $titulo       = null;
@@ -123,36 +122,76 @@ class Articulo extends Model {
         return $objs;
     }
 
-    public function getAll($limit = ["offset" => 0, "row_count" => 0]) {
+    public function getAll($search_query = "", $date = ["year" => "____", "month" => "__", "day" => "__"], $sort = "", $page = "") {
         $this->connect();
-        $pagination = "";
-        $offset     = $limit["offset"];
-        $count      = $limit["row_count"];
+        $where_clause = "";
+        $order_clause = "";
+        $limit_clause = "";
+        $values       = [];
 
-        if($offset != 0 && $count != 0) {
-            $pagination = " LIMIT $offset, $count";
-        }
-        else if($count != 0) {
-            $pagination = " LIMIT $count";
+        // FIXME: order and limit clauses are vulnerable to SQL injections
+
+        if (!empty($search_query)) {
+            $where_clause = " WHERE titulo LIKE :search_query";
+            $values["search_query"] = "%$search_query%";
         }
 
-        $stmt = $this->pdo->prepare(self::GET_ALL_QUERY . $pagination);
-        $stmt->execute([]);
+        // If either the year, month or day isn't a wildcard
+        if(
+           $date["year"]  != "____"
+        || $date["month"] != "__"
+        || $date["day"]   != "__"
+        ) {
+            if(empty($where_clause)) {
+                $where_clause = " WHERE fecha LIKE :yyyymmdd";
+            } else {
+                $where_clause = "$where_clause AND fecha LIKE :yyyymmdd";
+            }
+            $values["yyyymmdd"] = $date["year"] . "-" . $date["month"] . "-" . $date["day"] . " %";
+        }
+
+        if(!empty($sort)) {     
+            $column = $sort["column"];
+            $order = $sort["order"];
+            $order_clause = " ORDER BY $column $order";
+        }
+
+        if (!empty($page)) {
+            $length = intval($page["length"]);
+            $offset = ($page["page"] - 1) * $length;
+
+            if ($offset != 0) {
+                $limit_clause = " LIMIT $offset, $length";
+            } else {
+                $limit_clause = " LIMIT $length";
+            }
+        }
+
+        $stmt = $this->pdo->prepare(self::GET_ALL_QUERY . $where_clause . $order_clause . $limit_clause);
+        $stmt->execute($values);
         $rslt = $stmt->fetchAll();
-        $objs = [];
 
-        foreach($rslt as $row) {
-            array_push($objs, self::new(
-                $row["id"],
-                $row["titulo"],
-                $row["cuerpo"],
-                $row["url_imagen"],
-                $row["id_categoria"],
-                $row["fecha"]
-            ));
+        $filtered_results = [];
+        foreach ($rslt as $row) {
+            array_push($filtered_results, [
+                "id"           => $row["id"],
+                "titulo"       => $row["titulo"],
+                "cuerpo"       => $row["cuerpo"],
+                "url_imagen"   => $row["url_imagen"],
+                "id_categoria" => $row["id_categoria"],
+                "fecha"        => $row["fecha"]
+            ]);
         }
 
-        return $objs;
+        $stmt = $this->pdo->prepare(self::GET_ROW_COUNT_QUERY . $where_clause . $order_clause);
+        $stmt->execute($values);
+        $rslt = $stmt->fetch();
+
+        return [
+            "page"       => $page["page"],
+            "total_rows" => $rslt["row_count"],
+            "results"    => $filtered_results
+        ];
     }
 
     public function update() {
