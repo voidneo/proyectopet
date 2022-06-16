@@ -40,19 +40,19 @@ class Category extends ApiObject {
         }
 
         if (self::exist(["page"])) {
-            $pag = json_decode($_GET["page"]);
-            $pagination = [
-                "page"   => $pag->page,
-                "length" => $pag->length
-            ];
+            $pagination["page"] = $_GET["page"];
         }
 
-        if (self::exist(["sort"])) {
-            $ord = json_decode($_GET["sort"]);
-            $sort    = [
-                "column" => $ord->column,
-                "order"  => $ord->order
-            ];
+        if (self::exist(["page_length"])) {
+            $pagination["length"] = $_GET["page_length"];
+        }
+
+        if (self::exist(["sort_column"])) {
+            $sort["column"] = $_GET["sort_column"];
+        }
+
+        if (self::exist(["sort_order"])) {
+            $sort["order"] = $_GET["sort_order"];
         }
 
         $this->load_model("Categoria");
