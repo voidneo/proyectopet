@@ -15,8 +15,12 @@
 
     if (isset($data["token"])) {
         echo "<h4>Bienvenido " . $data["nombre"] . " " . $data["apellido"] . "</h4>";
+        echo "<a href='#'>Panel de control</a> ";
+        echo "<a href='./logout'>Cerrar sesion</a>";
     } else {
         echo "<h4>Bienvenido usuario</h4>";
+        echo "<a href='./signup'>Registrarse</a> or ";
+        echo "<a href='./login'>iniciar sesi&oacute;n</a>";
     }
 
     ?>
