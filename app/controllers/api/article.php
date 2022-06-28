@@ -40,6 +40,9 @@ class Article extends ApiObject {
 
         if (!self::isSecurityHashValid("GET")) return;
 
+        $this->load_model("Categoria");
+        $cat = new Categoria;
+
         $this->load_model("Articulo");
         $art = new Articulo;
 
@@ -47,16 +50,18 @@ class Article extends ApiObject {
             $art = $art->findById($_GET["id"]);
 
             if($art) {
-                $json = json_encode([
+                $cat = $cat->findById($art->getId());
+                $json = [
                     "id"           => $art->getId(),
                     "titulo"       => $art->getTitulo(),
                     "cuerpo"       => $art->getCuerpo(),
                     "url_imagen"   => $art->getUrlImagen(),
                     "id_categoria" => $art->getIdCategoria(),
+                    "categoria"    => $cat->getNombre(),
                     "fecha"        => $art->getFecha()
-                ]);
+                ];
 
-                self::send(self::STATUS_OK, "", $json);
+                self::send(self::STATUS_OK, "", [$json]);
                 return;
             }
 
