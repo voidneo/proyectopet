@@ -3,7 +3,7 @@
 class Router extends Controller {
 
     // TODO: create controller to show error pages
-    public function route($data = [], $include_folder = "", $controller = "Home", $method = "index") {
+    public function route($data = [], $include_folder = "", $controller = "home", $method = "index") {
         if(isset($data[0]) && file_exists("../app/controllers/" . $include_folder . $data[0] . ".php")) {
             $controller = $data[0];
             unset($data[0]);

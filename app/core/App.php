@@ -3,7 +3,7 @@
 class App extends Controller {
 
     public function __construct() {
-        $this->load_controller("Router");
+        $this->load_controller("router");
         $router = new Router;
         $router->route($this->parse_url());
     }
