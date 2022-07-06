@@ -28,6 +28,7 @@ class ApiObject extends Controller {
     }
 
     protected static function send($status, $error, $content = []) {
+        header('Content-type: application/json; charset=utf-8');
         echo json_encode([
             "status"  => $status,
             "error"   => $error,
