@@ -40,4 +40,12 @@
         </tr>
     </tfoot>
 </table>
-<script type="text/javascript" src="./scripts/category-list.js"></script>
+
+<?php
+$script_path = "./scripts/";
+if(isset($data["script_path"])) {
+    $script_path = $data["script_path"];
+}
+?>
+
+<script type="text/javascript" src="<?php echo $script_path; ?>category-list.js""></script>
