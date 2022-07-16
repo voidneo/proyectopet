@@ -19,7 +19,9 @@ class Component extends ApiObject {
         //if (!self::isSecurityHashValid()) return;
 
         $data["security_hash"] = $_GET["security_hash"];
+        $data["script_path"] = "./../../scripts/";
 
+        echo "<script type='text/javascript'>const BASE_URL = window.location.href.substr(0, 36);</script>";
         $this->load_view("components/CategoryList", $data);
     }
 }
