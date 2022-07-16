@@ -6,7 +6,7 @@ async function getCategories() {
 	let sort_order    = document.querySelector("#order-direction").value;
     let security_hash = document.querySelector("#security-hash").value;
 
-	let url = "./api/category/read";
+	let url = BASE_URL + "/api/category/read";
 	let params = `?
 	query=${search_query}
 	&page=${current_page}
@@ -26,7 +26,7 @@ function createCategory(name) {
 	formData.append("nombre", name);
     formData.append("security_hash", security_hash);
 
-	fetch("./api/category/create", {
+	fetch(BASE_URL + "/api/category/create", {
 		method: "POST",
 		body: formData,
 	})
@@ -53,7 +53,7 @@ function updateCategory(id, name) {
 	formData.append("nombre", name);
     formData.append("security_hash", securityHashInput.value);
 
-	fetch("./api/category/update", {
+	fetch(BASE_URL + "/api/category/update", {
 		method: "POST",
 		body: formData,
 	})
@@ -76,7 +76,7 @@ function deleteCategory(id) {
 	formData.append("id", id);
     formData.append("security_hash", securityHashInput.value);
 
-	fetch("./api/category/delete", {
+	fetch(BASE_URL + "/api/category/delete", {
 		method: "POST",
 		body: formData,
 	})
