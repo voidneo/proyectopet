@@ -23,9 +23,9 @@ class User extends ApiObject {
             $_POST["correo"],
             password_hash($_POST["contrasena"], PASSWORD_DEFAULT)
         )) {
-            $this->load_controller("api/authenticate");
-            $auth = new Authenticate;
-            $auth->index([], false);
+            //$this->load_controller("api/authenticate");
+            //$auth = new Authenticate;
+            //$auth->index([], false);
             self::send(self::STATUS_CREATED, "");
             return;
         }

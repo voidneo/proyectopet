@@ -15,13 +15,20 @@ class Component extends ApiObject {
     }
 
     public function category_list($data = []) {
-
-        //if (!self::isSecurityHashValid()) return;
+        if (!self::isSecurityHashValid("GET")) return;
 
         $data["security_hash"] = $_GET["security_hash"];
-        $data["script_path"] = "./../../scripts/";
 
-        echo "<script type='text/javascript'>const BASE_URL = window.location.href.substr(0, 36);</script>";
+        // TODO: adapt BASE_URL to work regardless of domain name
         $this->load_view("components/CategoryList", $data);
+    }
+
+    public function article_manager($data = []) {
+        if (!self::isSecurityHashValid("GET")) return;
+
+        $data["security_hash"] = $_GET["security_hash"];
+
+        // TODO: adapt BASE_URL to work regardless of domain name
+        $this->load_view("components/ArticleManager", $data);
     }
 }

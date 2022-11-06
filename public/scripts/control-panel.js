@@ -1,4 +1,4 @@
-function cp_getComponent(name, args = {}, frame, security_hash) {
+function cp_getComponent(name, args = {}, container, security_hash) {
     let url = "./api/component/" + name;
 	let params = `?security_hash=${security_hash}`;
 
@@ -6,31 +6,35 @@ function cp_getComponent(name, args = {}, frame, security_hash) {
         params = params + "&" + key + "=" + args[key];
     }
 
-	frame.setAttribute("src", url + params);
+    fetch(url + params, { method: "GET" })
+    .then(res => res.text())
+    .then(data => {
+        container.innerHTML = data;
+        scripts = document.getElementsByTagName("script");
+        for(i = 0; i < scripts.length; i++) {
+            if(scripts[i].innerHTML != "")
+                eval(scripts[i].innerHTML);
+        }
+    })
+    .catch(console.error);
 }
 
 window.addEventListener("load", evt => {
     security_hash = document.getElementById("security-hash").value;
-    btnUsr = document.getElementById("btn-users");
-    btnCat = document.getElementById("btn-categories");
-    btnArt = document.getElementById("btn-articles");
-    frame  = document.getElementById("frame");
+    btnUsr        = document.getElementById("btn-users");
+    btnCat        = document.getElementById("btn-categories");
+    btnArt        = document.getElementById("btn-articles");
+    container     = document.getElementById("component");
 
     btnUsr.addEventListener("click", evt => {
         // TODO: load users component
     });
 
     btnCat.addEventListener("click", evt => {
-        cp_getComponent("category_list", {}, frame, security_hash);
-        /* FIXME: component's script path loading from api/component/ instead of public/
-         *  https://localhost/proyectopet/public/api/component/scripts/category-list.js
-         *
-         * FIXME: component's script fetch calls uses api/component/ as base instead of public/
-         *  https://localhost/proyectopet/public/api/component/api/category/read?query=&page=1&page_length=5&sort_column=id&sort_order=asc&security_hash=5f9ad333c73b2918541d1107b003aafa25b4ac80
-         */
+        cp_getComponent("category_list", {}, container, security_hash);
     })
 
     btnArt.addEventListener("click", evt => {
-        // TODO: load articles component
+        cp_getComponent("article_manager", {}, container, security_hash);
     });
 });

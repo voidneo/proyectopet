@@ -12,7 +12,7 @@ class ApiObject extends Controller {
     protected const STATUS_NOT_FOUND      = 404;
     protected const INTERNAL_SERVER_ERROR = 500;
 
-    protected static function exist($keys = [], $method = "GET") {
+    public static function exist($keys = [], $method = "GET") {
         if ($method == "GET") {
             $method = $_GET;
         } else if ($method == "POST") {

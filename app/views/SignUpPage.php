@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=, initial-scale=1.0">
     <title><?php echo $data["title"]; ?></title>
+    <link href="./css/bootstrap.min.css" rel="stylesheet" />
+    <script type="text/javascript" src="./scripts/bootstrap.min.js"></script>
     <style>
         body {
             font-family: Arial, Sans-serif;
@@ -16,104 +18,44 @@
             justify-content: center;
         }
 
-        .wrapper {
-            background-color: white;
-            border-radius: 5px;
-            padding: 25px;
-            width: 300px;
-            box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.12);
-        }
-
-        input[type=text],
-        input[type=password] {
-            border: none;
-            width: -moz-available;
-            outline: none;
-            padding: 10px;
-            margin: 0px;
-            margin-top: 10px;
-            color: #828282;
-            font-size: 16px;
-            font-family: Sans-serif;
-        }
-
-        input[type=submit] {
-            border: none;
-            width: -moz-available;
-            outline: none;
-            background-color: #4DA3EE;
-            border-radius: 5px;
-            height: 40px;
-            color: white;
-            font-family: Sans-serif;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        input[type=submit]:hover {
-            background-color: #64B7FF;
-        }
-
-        input[type=submit]:active {
-            background-color: #408FD5;
-        }
-
-        .border {
-            height: 2px;
-            background-color: #4DA3EE;
-            width: 0%;
-            transition: width 0.3s ease;
-            margin-bottom: 5px;
-        }
-
-        .field:focus-within>.border {
-            width: 100%;
-        }
-
-        .title {
-            margin-top: 0px;
-            text-align: center;
-            color: #464646;
+        .form-signup {
+            max-width: 330px;
+            padding: 15px;
         }
     </style>
 </head>
 
-<body>
-    <div class="wrapper">
+<body class="text-center">
+    <main class="form-signup w-100 m-auto">
         <form id="form" action="login.php" method="POST">
-            <h1 class="title"><?php echo $data["title"]; ?></h1>
-            <div class="field">
-                <label>Cedula de identidad</label><br />
-                <input id="cedula" name="cedula" type="text" placeholder="Cedula sin puntos ni guiones" required></br>
-                <div class="border"></div>
+            <h1 class="h3 mb-3 fw-normal">Registrarme</h1>
+            <div class="form-floating">
+                <input type="tel" name="cedula" class="form-control" id="cedula" placeholder="12345678"  pattern="^[0-9]{8}" required>
+                <label for="cedula">C&eacute;dula</label>
             </div>
-            <div class="field">
-                <label>Correo elecrt&oacute;nico</label><br />
-                <input id="correo" name="correo" type="text" placeholder="correo@dominio.com" required></br>
-                <div class="border"></div>
+            <div class="form-floating">
+                <input type="email" name="correo" class="form-control" id="correo" placeholder="usuario@dominio.com" required>
+                <label for="correo">Correo</label>
             </div>
-            <div class="field">
-                <label>Nombre</label><br />
-                <input id="nombre" name="nombre" type="text" placeholder="Primer nombre" required></br>
-                <div class="border"></div>
+            <div class="form-floating">
+                <input type="text" name="nombre" class="form-control" placeholder="Nombre" id="nombre" required>
+                <label for="nombre">Nombre</label>
             </div>
-            <div class="field">
-                <label>Apellido</label><br />
-                <input id="apellido" name="apellido" type="text" placeholder="Primer apellido" required></br>
-                <div class="border"></div>
+            <div class="form-floating">
+                <input type="text" name="apellido" class="form-control" id="apellido" placeholder="Apellido" required>
+                <label for="apellido">Apellido</label>
             </div>
-            <div class="field">
-                <label>Contrasena</label></br>
-                <input id="contrasena" name="contrasena" type="password" placeholder="●●●●●●●●●●●●" required><br />
-                <div class="border"></div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="contrasena" placeholder="Contrasena">
+                <label for="contrasena">Contrase&ntilde;a</label>
             </div>
             <input type="hidden" id="security_hash" name="security_hash" value="<?php echo $data["security_hash"] ?>" />
             <div>
                 <p id="feedback"></p>
             </div>
-            <input id="enviar" type="submit" value="Registrarse" />
+            <button class="w-100 btn btn-lg btn-primary" type="submit" id="enviar">Registrarse</button>
         </form>
-    </div>
+    </main>
     <script type="text/javascript" src="./scripts/signup-form.js"></script>
 </body>
 

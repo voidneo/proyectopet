@@ -31,6 +31,11 @@ class Controller {
         require_once("../app/controllers/" . $script["path"] . $script["name"] . ".php");
     }
 
+    public function load_lib($lib) {
+        $script = self::resolvePath($lib);
+        require_once("../app/libs/" . $script["path"] . $script["name"] . ".php");
+    }
+
 }
 
 ?>

@@ -12,7 +12,6 @@ document.getElementById("form").addEventListener("submit", (evt) => {
 	})
 		.then((res) => res.json())
 		.then((data) => {
-			console.log(data);
 			if (data["error"]) {
 				document.getElementById("feedback").innerText = data["error"];
 			} else {

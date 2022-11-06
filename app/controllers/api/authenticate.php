@@ -16,8 +16,19 @@ class Authenticate extends ApiObject {
 
         if ($user) {
             if (password_verify($_POST["contrasena"], $user->getContrasena())) {
-                $_SESSION["token"] = hash("sha1", random_bytes(8));
-                $_SESSION["cedula"] = $user->getCI();
+
+                if($user->getValido() == "0") {
+                    self::send(self::STATUS_UNAUTHORIZED, "Aun no has sido validado");
+                    return;
+                }
+
+                $_SESSION["token"]    = hash("sha1", random_bytes(8));
+                $_SESSION["id"]       = $user->getId();
+                $_SESSION["cedula"]   = $user->getCI();
+                $_SESSION["nombre"]   = $user->getNombre();
+                $_SESSION["apellido"] = $user->getApellido();
+                $_SESSION["correo"]   = $user->getCorreo();
+                $_SESSION["rol"]      = $user->getRol();
 
                 if ($sendResponseOnSuccess)
                     self::send(self::STATUS_OK, "", ["token" => $_SESSION["token"]]);

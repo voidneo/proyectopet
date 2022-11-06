@@ -2,7 +2,7 @@
 
 class Model {
     private const DB_HOST = "localhost";
-    private const DB_NAME = "polo_tecnologico";
+    private const DB_NAME = "pet";
     private const DB_USER = "root";
     private const DB_PASS = "";
     protected $pdo = null;

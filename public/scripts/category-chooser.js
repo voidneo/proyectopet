@@ -1,5 +1,5 @@
 async function cc_getCategories(query) {
-	let security_hash = document.querySelector("#security-hash").value;
+	let security_hash = document.querySelector("#cat-chooser").getAttribute("security-hash");
 	let url           = "./api/category/read";
 	let params        = `?query=${query}&security_hash=${security_hash}`;
 
@@ -22,7 +22,8 @@ function cc_refreshSuggestions() {
 			}
 
 			cc_isInDataset(catChooser, list);
-		});
+		})
+		.catch(console.error);
 }
 
 // Checks if input's value is on the given list
@@ -41,10 +42,18 @@ function cc_isInDataset(input, list) {
 	input.setAttribute("valid", "false");
 }
 
-window.addEventListener("load", (evt) => {
+function onLoad() {
+	if(window.cat_chooser_loaded) {
+		return;
+	}
+
+	window.cat_chooser_loaded = true;
+	
 	let catChooser = document.querySelector("#cat-chooser");
 	let list       = document.querySelector("#cat-list");
 	let timer      = null;
+    //window.BASE_PATH     = catChooser.getAttribute("base-path");
+
 	catChooser.addEventListener("input", (evt) => {
 		if (cc_isInDataset(catChooser, list)) {
 			clearTimeout(timer);
@@ -54,4 +63,8 @@ window.addEventListener("load", (evt) => {
 		clearTimeout(timer);
 		timer = setTimeout(cc_refreshSuggestions, 333);
 	});
-});
+}
+
+window.addEventListener("load", onLoad);
+
+onLoad();

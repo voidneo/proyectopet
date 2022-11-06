@@ -6,7 +6,7 @@ async function getCategories() {
 	let sort_order    = document.querySelector("#order-direction").value;
     let security_hash = document.querySelector("#security-hash").value;
 
-	let url = BASE_URL + "/api/category/read";
+	let url = "./api/category/read";
 	let params = `?
 	query=${search_query}
 	&page=${current_page}
@@ -101,7 +101,7 @@ function removeAllChildren(id) {
 }
 
 function generatePagination(results) {
-	const rows_per_page      = document.querySelector("#rows-per-page").value;
+	const rows_per_page = document.querySelector("#rows-per-page").value;
 
 	const currentPage = results["content"]["page"];
 	const total_rows  = results["content"]["total_rows"];
@@ -110,19 +110,18 @@ function generatePagination(results) {
 	let pages = document.querySelector("#pages");
 
 	for (let i = 1; i <= nOfPages; i++) {
-		let btn = document.createElement("button");
+		let btn = createPaginationBtn(i, currentPage);
 		btn.setAttribute("id", "page-" + i);
 
-		if (currentPage == i) btn.setAttribute("disabled", "");
-
-		btn.innerText = i;
 		pages.appendChild(btn);
-		pages.innerHTML += " ";
 	}
 
-    let currentPageCtrl    = document.querySelector("#loaded-page");
+    let currentPageCtrl = document.querySelector("#loaded-page");
 
 	for (let i = 1; i <= nOfPages; i++) {
+
+		if(i == currentPage) continue;
+
 		document.querySelector("#page-" + i).addEventListener("click", (evt) => {
 			currentPageCtrl.value = i;
 			getCategories()
@@ -141,13 +140,16 @@ function populateTable(results) {
 		let id    = rows[i]["id"];
 		let name  = rows[i]["nombre"];
 
-		let tr    = document.createElement("tr");
-		let c1    = document.createElement("td");
-		let input = document.createElement("input");
-		let c2    = document.createElement("td");
-		let edit  = document.createElement("a");
-		let del   = document.createElement("a");
-		let c3    = document.createElement("td");
+		let tr        = document.createElement("tr");
+		let c1        = document.createElement("td");
+		let input     = document.createElement("input");
+		let c2        = document.createElement("td");
+		let btngrp    = document.createElement("div");
+		let edit      = document.createElement("button");
+		let edit_icon = document.createElement("i");
+		let del       = document.createElement("button");
+        let del_icon  = document.createElement("i");
+		let c3        = document.createElement("td");
         
 		tr.setAttribute("id", "row-" + id);
 
@@ -157,27 +159,37 @@ function populateTable(results) {
 		input.setAttribute("value", name);
 		input.setAttribute("id", "id-" + id);
 		input.setAttribute("type", "text");
-		input.setAttribute("readonly", "true");
-
+		input.classList.add("form-control", "disabled");
+		input.setAttribute("title", "Doble click para editar");
+		input.readOnly = true;
+		
 		c2.appendChild(input);
 		tr.appendChild(c2);
+		
+		btngrp.setAttribute("class", "input-group")
+		
+        edit_icon.setAttribute("class", "fa-regular fa-pen-to-square");
 
-		edit.innerText = "Editar";
-		edit.setAttribute("href", "#");
+		edit.setAttribute("class", "btn btn-success");
+		edit.setAttribute("title", "Editar categoria");
+		edit.appendChild(edit_icon);
+		
+        del_icon .setAttribute("class", "fa-regular fa-trash-can");
+		
+		del.setAttribute("class", "btn btn-danger");
+		del.setAttribute("title", "Eliminar categoria");
+		del.appendChild(del_icon);
+		
+		btngrp.appendChild(edit);
+		btngrp.appendChild(del);
 
-		del.innerText = "Eliminar";
-		del.setAttribute("href", "#");
-
-		c3.appendChild(edit);
-		c3.innerHTML += " | ";
-		c3.appendChild(del);
+		c3.appendChild(btngrp);
 		tr.appendChild(c3);
 
 		table.appendChild(tr);
 
 		edit.addEventListener("click", (evt) => {
-			// FIXME: this event doesn't fire because javascript, why else
-			input.removeAttribute("readonly");
+			input.readOnly = false;
 			input.focus();
 		});
 
@@ -189,17 +201,17 @@ function populateTable(results) {
 
 		input.addEventListener("dblclick", (evt) => {
 			input.setAttribute("previous-value", input.value);
-			input.removeAttribute("readonly");
+			input.readOnly = false;
 		});
 
 		input.addEventListener("keyup", (evt) => {
 			if (evt.code == "Enter") {
                 // TODO: validate the data
-				input.setAttribute("readonly", "true");
+				input.readOnly = true;
 				updateCategory(id, input.value);
 			} else if (evt.code == "Escape") {
 				input.value = input.getAttribute("previous-value");
-				input.setAttribute("readonly", "true");
+				input.readOnly = true;
 			}
 		});
 	}
@@ -212,7 +224,7 @@ function refreshTable(data) {
 	generatePagination(data);
 }
 
-window.addEventListener("load", (evt) => {
+(()=> {
 	let searchBoxCtrl      = document.querySelector("#search-box");
 	let searchBtn          = document.querySelector("#search-btn");
 	let pageLengthCtrl     = document.querySelector("#rows-per-page");
@@ -291,4 +303,4 @@ window.addEventListener("load", (evt) => {
 		.then((response) => response.json())
 		.then(refreshTable)
 		.catch(console.log);
-});
+	})();

@@ -43,14 +43,16 @@ class Articulo extends Model {
         $stmt = $this->pdo->prepare(self::FIND_BY_ID_QUERY);
         $stmt->execute([":id" => $id]);
         $row = $stmt->fetch();
-        return self::new(
-            $row["id"],
-            $row["titulo"],
-            $row["cuerpo"],
-            $row["url_imagen"],
-            $row["id_categoria"],
-            $row["fecha"]
-        );
+        if($row)
+            return self::new(
+                $row["id"],
+                $row["titulo"],
+                $row["cuerpo"],
+                $row["url_imagen"],
+                $row["id_categoria"],
+                $row["fecha"]
+            );
+        return new Articulo;
     }
 
     public function searchByTituloPartial($title) {
@@ -122,7 +124,7 @@ class Articulo extends Model {
         return $objs;
     }
 
-    public function getAll($search_query = "", $date = ["year" => "____", "month" => "__", "day" => "__"], $sort = "", $page = "") {
+    public function getAll($search_query = "", $category = "", $date = ["year" => "____", "month" => "__", "day" => "__"], $sort = "", $page = ["page" => 1, "length" => 10]) {
         $this->connect();
         $where_clause = "";
         $order_clause = "";
@@ -134,6 +136,14 @@ class Articulo extends Model {
         if (!empty($search_query)) {
             $where_clause = " WHERE titulo LIKE :search_query";
             $values["search_query"] = "%$search_query%";
+        }
+
+        if(!empty($category)) {
+            if(empty($where_clause)) {
+                $where_clause = " WHERE id_categoria = $category";
+            } else {
+                $where_clause = "$where_clause AND id_categoria = $category";
+            }
         }
 
         // If either the year, month or day isn't a wildcard

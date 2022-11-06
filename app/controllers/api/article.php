@@ -50,7 +50,7 @@ class Article extends ApiObject {
             $art = $art->findById($_GET["id"]);
 
             if($art) {
-                $cat = $cat->findById($art->getId());
+                $cat = $cat->findById($art->getIdCategoria());
                 $json = [
                     "id"           => $art->getId(),
                     "titulo"       => $art->getTitulo(),
@@ -70,12 +70,17 @@ class Article extends ApiObject {
         }
 
         $search_query = "";
+        $category     = "";
         $date         = ["year"   => "____", "month"  => "__", "day" => "__"];
         $pagination   = ["page"   => 1,      "length" => 5];
         $sort         = ["column" => "id",   "order"  => "ASC"];
 
         if (self::exist(["query"])) {
             $search_query = $_GET["query"];
+        }
+
+        if (self::exist(["category"])) {
+            $category = $_GET["category"];
         }
 
         if(self::exist(["year"])) {
@@ -108,7 +113,7 @@ class Article extends ApiObject {
             $sort["order"] = $_GET["sort_order"];
         }
 
-        $art = $art->getAll($search_query, $date, $sort, $pagination);
+        $art = $art->getAll($search_query, $category, $date, $sort, $pagination);
 
         if($art) {
             self::send(self::STATUS_OK, "", $art);
